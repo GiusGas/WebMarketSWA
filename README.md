@@ -21,8 +21,7 @@ Di seguito, invece, la lista di dipendenze lato client:
 #### 1. Login/logout con username e password.
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
-Una volta effettuato il login verrà generato un token JWT che potrà essere successivamente utilizzato per i servizi REST che richiedono
-l'autenticazione.
+Una volta effettuato il login verrà generato un token JWT che potrà essere successivamente utilizzato per i servizi REST che richiedono l'autenticazione.
 
 #### 2. Inserimento di una *richiesta di acquisto* (comprensiva di categoria di prodotto, di tutte le caratteristiche richieste per quel tipo di prodotto e delle eventuali note)
 
@@ -36,8 +35,7 @@ Funzionalità accessibile tramite chiamata REST che richiede l'invio di due para
 
 #### 4. Inserimento e modifica (da parte del tecnico incaricato) di una *proposta di acquisto* associata a una richiesta 
 
-Funzionalità accessibile tramite chiamata REST che richiede l'invio della proposta di acquisto in formato JSON e l'id della richiesta alla quale
-è associata come parametro nell'URL dell'API.
+Funzionalità accessibile tramite chiamata REST che richiede l'invio della proposta di acquisto in formato JSON e l'id della richiesta alla quale è associata come parametro nell'URL dell'API.
 
 #### 5. Approvazione (da parte dell'ordinante) di una *proposta di acquisto*
 
@@ -65,4 +63,4 @@ Per quanto riguarda il servizio REST, richiede solo l'id della richiesta di acqu
 
 #### 10. Estrazione lista richieste di acquisto gestite da un determinato tecnico
 
-Funzionalità accessibile tramite chiamata REST e che richiede l'id del tecnico come parametro nell'URL dell'API.
+Funzionalità accessibile tramite chiamata REST, non richiede alcuna risorsa o parametro in quanto è necessario che l'utente sia autenticato e che sia un tecnico.
