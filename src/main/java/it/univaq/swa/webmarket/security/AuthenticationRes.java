@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import it.univaq.swa.webmarket.exceptions.RESTWebApplicationException;
+import it.univaq.swa.webmarket.exceptions.WebMarketException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -53,7 +55,8 @@ public class AuthenticationRes {
 		                            schema = @Schema(type = "string", pattern = "Bearer [a-z0-9A-Z-]+")
 		                        )
 		                    }),
-			@ApiResponse(responseCode = "401", description = "Unauthorized") })
+			@ApiResponse(responseCode = "500", description = "Username or password not setted"),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, wrong username or password") })
     public Response login(@Context UriInfo uriinfo,
     		@Parameter(schema = @Schema(type = "string"))
             @FormParam("username") String username,
@@ -63,15 +66,15 @@ public class AuthenticationRes {
             
             if (JWTHelpers.getInstance().authenticateUser(username, password)) {
                 String authToken = JWTHelpers.getInstance().issueToken(uriinfo, username);
-                //Restituiamolo in tutte le modalità, giusto per fare un esempio...
+                
                 return Response.ok(authToken)
                         .cookie(new NewCookie.Builder(TOKEN).value(authToken).build())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken).build();
             }
-        } catch (Exception e) {
-            //logging dell'errore 
+        } catch (WebMarketException e) {
+            throw new RESTWebApplicationException(500, e.getMessage()); 
         }
-        return Response.status(UNAUTHORIZED).build();
+        return Response.status(UNAUTHORIZED).entity("Unauthorized, wrong username or password").type(MediaType.TEXT_PLAIN).build();
     }
     
     @DELETE

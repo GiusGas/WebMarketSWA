@@ -1,18 +1,22 @@
 package it.univaq.swa.webmarket.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import it.univaq.swa.webmarket.utility.FakeDb;
-import jakarta.ws.rs.core.UriInfo;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import it.univaq.swa.webmarket.exceptions.WebMarketException;
+import it.univaq.swa.webmarket.utility.FakeDb;
+import jakarta.ws.rs.core.UriInfo;
 
 public class JWTHelpers {
 
@@ -29,7 +33,10 @@ public class JWTHelpers {
         }
     }
     
-    public boolean authenticateUser(String username, String password) {
+    public boolean authenticateUser(String username, String password) throws WebMarketException {
+    	if(Objects.isNull(username) || Objects.isNull(password)) {
+    		throw new WebMarketException("Username or password not setted");
+    	}
         return FakeDb.authUser(username, password);
     }
 
