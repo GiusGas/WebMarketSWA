@@ -1,0 +1,28 @@
+resourcePackages:
+- io.swagger.sample.resource
+prettyPrint: true
+cacheTTL: 0
+openAPI:
+  info:
+    version: '1.0'
+    title: Swagger Web Market - OpenAPI 3.0
+    description: 'This is the Web Market Api definition'
+    termsOfService: http://swagger.io/terms/
+    license:
+      name: Apache 2.0
+      url: http://www.apache.org/licenses/LICENSE-2.0.html
+  servers:
+  - url: http://localhost:8080/WebMarket
+  tags:
+    - name: PurchaseRequest
+      description: Operations on single purchase request
+    - name: PurchaseRequest collection
+      description: Operations on the purchase request collection
+    - name: PurchaseRequest properties
+      description: Operations on single purchase request properties
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

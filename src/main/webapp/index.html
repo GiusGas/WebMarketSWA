@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Web Market application</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" />
+	<link rel="stylesheet" href="./res/webmarket.css" />
+</head>
+
+<body>
+	<!--<h1>JAX-RS EventsREST application (JakartaEE 10)</h1>
+        <p>This is a sample web application based on <strong>JakartaEE 10</strong> that runs on Apache <strong>Tomcat 10.1</strong> with <strong>Java 14</strong> or above.</p>
+        <p> The application is configured to expose RESTful resources through the <strong>JAX-RS</strong> reference implementation, <strong>Jersey</strong> (version 3, for Jakarta EE).</p>
+        <p> JAX-RS JSON serialization is handled by the <strong>Jackson</strong> JSON Provider (version 2, for Jakarta EE).</p>
+
+
+        <p>The RESTful resources, grouped under the /rest prefix, are the following:</p>-->
+
+	<div class="container-fluid">
+        <div class="row justify-content-between">
+            <h1 class="col-md-6">Gestione Acquisti</h1>
+            <div class="col-md-6 text-end d-flex align-items-center justify-content-end">
+                <form id="loginForm">
+                    <div class="row justify-content-end align-items-center">
+                        <div class="col-auto">
+                            <label for="username" class="visually-hidden">Username</label>
+                            <input type="text" class="form-control" id="username" placeholder="Username">
+                        </div>
+                        <div class="col-auto">
+                            <label for="password" class="visually-hidden">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Password">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+	<!-- Lista di proposte di acquisto -->
+	<div class="mb-5">
+		<h2>Proposte di Acquisto</h2>
+		<table class="table table-striped" id="proposteTable">
+			<thead>
+				<tr>
+					<th>Nome</th>
+					<th>Azione</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Contenuto dinamico -->
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Lista di richieste di acquisto -->
+	<div class="mb-5">
+		<h2>Le mie Richieste</h2>
+		<table class="table table-striped" id="richiesteTable">
+			<thead>
+				<tr>
+					<th>Categoria</th>
+					<th>Stato</th>
+					<th>Creato il</th>
+					<th>Ultima modifica</th>
+					<th>Azione</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Contenuto dinamico -->
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Lista di richieste con dettagli -->
+	<div>
+		<h2>Richieste in corso</h2>
+		<table class="table table-striped" id="richiesteInCorsoTable">
+			<thead>
+				<tr>
+					<th>Categoria</th>
+					<th>Stato</th>
+					<th>Creato il</th>
+					<th>Ultima modifica</th>
+					<th>Azione</th>
+					<th>Proposta d'acquisto</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Contenuto dinamico -->
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Modal per i dettagli della richiesta -->
+	<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Dettagli della Richiesta</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p><strong>Categoria:</strong> <span id="modalCategory"></span></p>
+					<p><strong>Caratteristiche Richieste:</strong> <span id="modalFeatures"></span></p>
+					<p><strong>Note:</strong> <span id="modalNotes"></span></p>
+					<p><strong>Creato il:</strong> <span id="modalCreatedAt"></span></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal per i dettagli del prodotto candidato -->
+	<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="productModalLabel">Dettagli del Prodotto</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p><strong>Nome Produttore:</strong> <span id="modalManufacturerName"></span></p>
+					<p><strong>Nome Prodotto:</strong> <span id="modalProductName"></span></p>
+					<p><strong>Codice Prodotto:</strong> <span id="modalProductCode"></span></p>
+					<p><strong>Prezzo:</strong> <span id="modalPrice"></span></p>
+					<p><strong>URL:</strong> <a id="modalUrl" href="#" target="_blank"></a></p>
+					<p><strong>Note:</strong> <span id="modalProposalNotes"></span></p>
+					<p><strong>Motivazione:</strong> <span id="modalMotivation"></span></p>
+					<p><strong>Creato il:</strong> <span id="modalProductCreatedAt"></span></p>
+					<p><strong>Aggiornato il:</strong> <span id="modalProductUpdatedAt"></span></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
+	<script src="./res/webmarket.js"></script>
+</body>
+
+</html>
