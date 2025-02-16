@@ -31,22 +31,6 @@ $(document).ready(function() {
 		});
 	});
 
-	$('#proposteTable').DataTable({
-		ajax: {
-			url: 'https://api.example.com/proposte',
-			dataSrc: ''
-		},
-		columns: [
-			{ data: 'nome' },
-			{
-				data: null,
-				render: function() {
-					return '<button class="btn btn-success btn-sm">Approva</button>';
-				}
-			}
-		]
-	});
-
 	$('#richiesteTable').DataTable({
 		ajax: {
 			url: 'http://localhost:8080/WebMarket/rest/requests/byUser',
@@ -215,10 +199,14 @@ $(document).ready(function() {
 			{
 				data: 'url',
 				render: function(data, type, row) {
-					console.log(data);
-					//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
-					return `<button class="btn btn-primary btn-sm" onclick='showProductModal(${JSON.stringify(row.proposal || {})})'>Dettagli</button>
-					<button class="btn btn-success btn-sm" onclick="sendApproval('${data}', true)">Approva</button>`;
+					console.log(row.proposal);
+					if (row.proposal != null) {
+						//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
+						return `<button class="btn btn-primary btn-sm" onclick='showProductModal(${JSON.stringify(row.proposal || {})})'>Dettagli</button>
+							<button class="btn btn-success btn-sm" onclick="sendApproval('${data}', true)">Approva</button>`;
+					} else {
+						return 'In corso di definizione';
+					}
 				}
 			}
 		]

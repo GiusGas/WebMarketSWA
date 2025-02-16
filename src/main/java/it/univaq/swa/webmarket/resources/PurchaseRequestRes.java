@@ -2,6 +2,8 @@ package it.univaq.swa.webmarket.resources;
 
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 
+import java.util.Objects;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -151,7 +153,7 @@ public class PurchaseRequestRes {
 		
 		if (!securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
-		} else if (!request.getTechnician().equals(user)) {
+		} else if (Objects.isNull(request.getTechnician()) || !request.getTechnician().equals(user)) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity("You are not assigned to this request").build();
 		}
 		
