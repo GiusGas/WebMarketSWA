@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
+import it.univaq.swa.webmarket.business.UserService;
+import it.univaq.swa.webmarket.business.UserServiceFactory;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
 import it.univaq.swa.webmarket.exceptions.WebMarketException;
 import it.univaq.swa.webmarket.model.PurchaseProposal;
@@ -19,7 +21,6 @@ import it.univaq.swa.webmarket.model.PurchaseRequest;
 import it.univaq.swa.webmarket.model.User;
 import it.univaq.swa.webmarket.model.UserType;
 import it.univaq.swa.webmarket.security.Logged;
-import it.univaq.swa.webmarket.utility.FakeDb;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -38,10 +39,12 @@ public class PurchaseRequestRes {
 	private static final String NOT_TECHNICIAN = "User is not a technician";
 	
 	private final PurchaseRequestsService business;
+	private final UserService userBusiness;
 	private final PurchaseRequest request;
 
 	public PurchaseRequestRes(PurchaseRequest purchaseRequest) {
 		this.business = PurchaseRequestsServiceFactory.getPurchaseRequestsService();
+		this.userBusiness = UserServiceFactory.getUserService();
 		this.request = purchaseRequest;
 	}
 
@@ -79,7 +82,7 @@ public class PurchaseRequestRes {
             required = true)PurchaseRequest body, @Context SecurityContext securityContext) {
 		
 		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
+		User user = userBusiness.getUserByUsername(username);
 
 		if (!securityContext.isUserInRole(UserType.PURCHASER.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_PURCHASER).build();
@@ -149,7 +152,7 @@ public class PurchaseRequestRes {
             required = true)PurchaseProposal purchaseProposal, @Context SecurityContext securityContext) {
 		
 		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
+		User user = userBusiness.getUserByUsername(username);
 		
 		if (!securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
@@ -184,7 +187,7 @@ public class PurchaseRequestRes {
 	public Response approvePurchaseProposal(@Context SecurityContext securityContext) {
 		
 		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
+		User user = userBusiness.getUserByUsername(username);
 
 		if (!securityContext.isUserInRole(UserType.PURCHASER.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_PURCHASER).build();
@@ -216,7 +219,7 @@ public class PurchaseRequestRes {
 	public Response deletePurchaseRequest(@Context SecurityContext securityContext) {
 		
 		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
+		User user = userBusiness.getUserByUsername(username);
 
 		if (!securityContext.isUserInRole(UserType.PURCHASER.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_PURCHASER).build();

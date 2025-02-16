@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
+import it.univaq.swa.webmarket.business.UserService;
+import it.univaq.swa.webmarket.business.UserServiceFactory;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
 import it.univaq.swa.webmarket.exceptions.RESTWebApplicationException;
 import it.univaq.swa.webmarket.exceptions.WebMarketException;
@@ -21,7 +23,6 @@ import it.univaq.swa.webmarket.model.PurchaseRequest;
 import it.univaq.swa.webmarket.model.User;
 import it.univaq.swa.webmarket.model.UserType;
 import it.univaq.swa.webmarket.security.Logged;
-import it.univaq.swa.webmarket.utility.FakeDb;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -42,9 +43,11 @@ public class PurchaseRequestsRes {
 	private static final String NOT_TECHNICIAN = "User is not a technician";
 	
 	private final PurchaseRequestsService business;
+	private final UserService userBusiness;
 
 	public PurchaseRequestsRes() {
 		this.business = PurchaseRequestsServiceFactory.getPurchaseRequestsService();
+		this.userBusiness = UserServiceFactory.getUserService();
 	}
 
 	@POST
@@ -66,7 +69,7 @@ public class PurchaseRequestsRes {
 			@Context UriInfo uriinfo) {
 
 		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
+		User user = userBusiness.getUserByUsername(username);
 
 		if (!securityContext.isUserInRole(UserType.PURCHASER.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_PURCHASER).build();
