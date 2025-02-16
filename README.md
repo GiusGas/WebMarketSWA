@@ -55,7 +55,7 @@ Il servizio richiede che l'utente sia autenticato come "ordinante" e che la rich
 #### 7. Estrazione lista delle richieste di acquisto *in corso* (non chiuse) di un determinato ordinante
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
-Tale servizio richiede che l'utente sia autenticato come "ordinante" e potrà vedere solo la lista delle proprie richieste.
+Tale servizio richiede che l'utente sia autenticato come "ordinante" e potrà vedere solo la lista delle proprie richieste *in corso*.
 
 #### 8. Estrazione lista delle richieste di acquisto non ancora assegnate ad alcun tecnico
 
@@ -71,3 +71,17 @@ Per quanto riguarda il servizio REST, richiede solo l'id della richiesta di acqu
 
 Funzionalità accessibile tramite chiamata REST, non richiede alcuna risorsa o parametro in quanto è necessario che l'utente sia autenticato e che sia un tecnico.
 A quel punto il servizio restituirà la lista di richieste gestite dal tecnico autenticato.
+
+## Funzionalità aggiuntive
+
+#### 1. Estrazione lista richieste di acquisto di un determinato ordinante
+
+Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
+Tale servizio richiede che l'utente sia autenticato come "ordinante" e potrà vedere solo la lista delle proprie richieste, qualsiasi sia il loro stato.
+
+#### 2. Modifica di una *richiesta di acquisto*
+
+Funzionalità accessibile tramite chiamata REST che richiede l'invio della richiesta in formato JSON e l'id della richiesta come parametro nell'URL dell'API.
+Il servizio richiede che l'utente sia autenticato come "ordinante" e che la richiesta di acquisto sia di proprietà del medesimo utente.
+
+Per maggiori dettagli sulle REST API rese disponibili è consigliato consultare l'apposita [documentazione OpenAPI](/openapi.yaml) (v3), da aprire con l'apposito [Swagger Editor](https://editor.swagger.io)
