@@ -43,6 +43,8 @@ paths:
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ purchaser"
+      security:
+      - bearerAuth: []
   /rest/requests/inProgress:
     get:
       tags:
@@ -59,6 +61,8 @@ paths:
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ purchaser"
+      security:
+      - bearerAuth: []
   /rest/requests/{id}/proposal/approve:
     put:
       tags:
@@ -86,6 +90,8 @@ paths:
           description: Purchase Request not found
         "500":
           description: Purchase proposal can not be approved
+      security:
+      - bearerAuth: []
   /rest/requests/{id}:
     get:
       tags:
@@ -139,6 +145,8 @@ paths:
             \ purchaser\n- You can't update another user's request"
         "404":
           description: Purchase Request not found
+      security:
+      - bearerAuth: []
     delete:
       tags:
       - PurchaseRequest
@@ -159,11 +167,13 @@ paths:
             \ purchaser\n- You can't delete another user's request"
         "404":
           description: Purchase Request not found
+      security:
+      - bearerAuth: []
   /rest/requests/{id}/proposal:
     put:
       tags:
       - PurchaseRequest properties
-      description: Set a purchase proposal for a request
+      description: Set or update a purchase proposal for a request
       operationId: setPurchaseProposal
       parameters:
       - name: id
@@ -191,6 +201,8 @@ paths:
             \ technician\n- You are not assigned to this request"
         "404":
           description: Purchase Request not found
+      security:
+      - bearerAuth: []
   /rest/requests/{id}/technician:
     put:
       tags:
@@ -226,38 +238,8 @@ paths:
             \ technician"
         "404":
           description: Purchase Request not found
-  /rest/requests/{id}/proposal/modify:
-    put:
-      tags:
-      - PurchaseRequest properties
-      description: Update the purchase proposal for a request
-      operationId: updatePurchaseProposal
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        description: The purchase proposal to update for a request
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PurchaseProposal"
-        required: true
-      responses:
-        "200":
-          description: The purchase request with the updated purchase proposal
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PurchaseRequest"
-        "401":
-          description: "Unauthorized: \n- User not authenticated\n- User is not a\
-            \ technician\n- You are not assigned to this request"
-        "404":
-          description: Purchase Request not found
+      security:
+      - bearerAuth: []
   /rest/requests/byTechnician:
     get:
       tags:
@@ -274,6 +256,8 @@ paths:
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ technician"
+      security:
+      - bearerAuth: []
   /rest/requests/byUser:
     get:
       tags:
@@ -290,6 +274,8 @@ paths:
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ purchaser"
+      security:
+      - bearerAuth: []
   /rest/requests/unassigned:
     get:
       tags:
@@ -306,6 +292,8 @@ paths:
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ technician"
+      security:
+      - bearerAuth: []
   /rest/auth/login:
     post:
       tags:

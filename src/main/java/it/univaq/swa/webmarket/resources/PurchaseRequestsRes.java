@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
@@ -53,6 +54,7 @@ public class PurchaseRequestsRes {
 	@Logged
 	@Operation(description = "Add a purchase request", 
 		tags = { "PurchaseRequest" }, 
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "201", description = "Purchase request created", 
 					content = @Content(schema = @Schema(implementation = URI.class))),
@@ -100,7 +102,8 @@ public class PurchaseRequestsRes {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Logged
 	@Operation(description = "Get the purchase requests collection of a purchaser", 
-		tags = {"PurchaseRequest collection" }, 
+		tags = {"PurchaseRequest collection" },
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The purchase requests collection", 
 					content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
@@ -123,6 +126,7 @@ public class PurchaseRequestsRes {
 	@Logged
 	@Operation(description = "Get the in progress purchase requests collection of a purchaser", 
 		tags = {"PurchaseRequest collection" }, 
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The in progress purchase requests collection", 
 					content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
@@ -145,6 +149,7 @@ public class PurchaseRequestsRes {
 	@Logged
 	@Operation(description = "Get the unassigned purchase requests collection", 
 		tags = {"PurchaseRequest collection" }, 
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The unassigned purchase requests collection", content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN)})
@@ -164,6 +169,7 @@ public class PurchaseRequestsRes {
 	@Logged
 	@Operation(description = "Get the purchase requests collection assigned to a technician", 
 		tags = {"PurchaseRequest collection" }, 
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The purchase requests collection assigned to a technician", content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN) })

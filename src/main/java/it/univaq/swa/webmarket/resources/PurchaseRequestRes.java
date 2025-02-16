@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
@@ -62,6 +63,7 @@ public class PurchaseRequestRes {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(description = "Update a purchase request",
 	  tags = {"PurchaseRequest"},
+	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
 	          @ApiResponse(responseCode = "200", description = "The updated purchase request", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
@@ -95,6 +97,7 @@ public class PurchaseRequestRes {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(description = "Set technician by ID for a purchase request",
 	  tags = {"PurchaseRequest properties"},
+	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
 	          @ApiResponse(responseCode = "200", description = "The purchase request updated with the assigned technician", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
@@ -128,8 +131,9 @@ public class PurchaseRequestRes {
 	@Logged
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(description = "Set a purchase proposal for a request",
+	@Operation(description = "Set or update a purchase proposal for a request",
 	  tags = {"PurchaseRequest properties"},
+	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
 	          @ApiResponse(responseCode = "200", description = "The purchase request updated with the purchase proposal", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
@@ -160,49 +164,13 @@ public class PurchaseRequestRes {
 	}
 
 	@PUT
-	@Path("/proposal/modify")
-	@Logged
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(description = "Update the purchase proposal for a request",
-	  tags = {"PurchaseRequest properties"},
-	  responses = {
-	          @ApiResponse(responseCode = "200", description = "The purchase request with the updated purchase proposal", content = @Content(
-	                  schema = @Schema(implementation = PurchaseRequest.class)
-	          )),
-	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN+"\n- You are not assigned to this request"),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
-	  })
-	public Response updatePurchaseProposal(@Parameter(
-            description = "The purchase proposal to update for a request",
-            schema = @Schema(implementation = PurchaseProposal.class),
-            required = true)PurchaseProposal purchaseProposal,
-			@Context SecurityContext securityContext) {
-		
-		String username = securityContext.getUserPrincipal().getName();
-		User user = FakeDb.getUserByUsername(username);
-		
-		if (!securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
-			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
-		} else if (!request.getTechnician().equals(user)) {
-			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity("You are not assigned to this request").build();
-		}
-		
-		try {
-			PurchaseRequest updatedRequest = business.setPurchaseProposal(purchaseProposal, request.getId());
-			return Response.ok(updatedRequest).build();
-		} catch (NotFoundException ex) {
-			return Response.status(Response.Status.NOT_FOUND).entity(NOT_FOUND).build();
-		}
-	}
-
-	@PUT
 	@Path("/proposal/approve")
 	@Logged
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(description = "Approve a purchase proposal for a request",
 	  tags = {"PurchaseRequest properties"},
+	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
 	          @ApiResponse(responseCode = "200", description = "The purchase request with the approved proposal", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
@@ -237,6 +205,7 @@ public class PurchaseRequestRes {
 	@Logged
 	@Operation(description = "Delete a purchase request",
 	  tags = {"PurchaseRequest"},
+	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
 	          @ApiResponse(responseCode = "204", description = "PurchaseRequest succesfully deleted"),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER+"\n- You can't delete another user's request"),
