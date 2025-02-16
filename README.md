@@ -115,4 +115,6 @@ API path: `PUT /rest/requests/{id}`
 Funzionalità accessibile tramite chiamata REST che richiede l'invio della richiesta in formato JSON e l'id della richiesta come parametro nell'URL dell'API.
 Il servizio richiede che l'utente sia autenticato come "ordinante" e che la richiesta di acquisto sia di proprietà del medesimo utente.
 
-Per maggiori dettagli sulle REST API rese disponibili è consigliato consultare l'apposita [documentazione OpenAPI](/openapi.yaml) (v3), da aprire con l'apposito [Swagger Editor](https://editor.swagger.io)
+## Specifica OpenAPI
+
+Per maggiori dettagli sulle REST API rese disponibili è consigliato consultare l'apposita [documentazione OpenAPI](/openapi.yaml) (versione 3.0), da aprire con l'apposito [Swagger Editor](https://editor.swagger.io)
