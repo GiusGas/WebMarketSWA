@@ -1,0 +1,461 @@
+openapi: 3.0.1
+info:
+  title: Swagger Web Market - OpenAPI 3.0
+  description: This is the Web Market Api definition
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "1.0"
+servers:
+- url: http://localhost:8080/WebMarket
+tags:
+- name: PurchaseRequest
+  description: Operations on single purchase request
+- name: PurchaseRequest collection
+  description: Operations on the purchase request collection
+- name: PurchaseRequest properties
+  description: Operations on single purchase request properties
+paths:
+  /rest/requests/add:
+    post:
+      tags:
+      - PurchaseRequest
+      description: Add a purchase request
+      operationId: addPurchaseRequest
+      requestBody:
+        description: The purchase request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseRequest"
+        required: true
+      responses:
+        "201":
+          description: Purchase request created
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Can not add this purchase request
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser"
+  /rest/requests/inProgress:
+    get:
+      tags:
+      - PurchaseRequest collection
+      description: Get the in progress purchase requests collection of a purchaser
+      operationId: getInProgressPurchaseRequestsByUser
+      responses:
+        "200":
+          description: The in progress purchase requests collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser"
+  /rest/requests/{id}/proposal/approve:
+    put:
+      tags:
+      - PurchaseRequest properties
+      description: Approve a purchase proposal for a request
+      operationId: approvePurchaseProposal
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: The purchase request with the approved proposal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser\n- You can't approve the proposal of another user's request"
+        "404":
+          description: Purchase Request not found
+        "500":
+          description: Purchase proposal can not be approved
+  /rest/requests/{id}:
+    get:
+      tags:
+      - PurchaseRequest
+      description: Retrieve a purchase request by its ID
+      operationId: getPurchaseRequest
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: The desired purchase request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "404":
+          description: Purchase Request not found
+    put:
+      tags:
+      - PurchaseRequest
+      description: Update a purchase request
+      operationId: updatePurchaseRequest
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The updated purchase request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseRequest"
+        required: true
+      responses:
+        "200":
+          description: The updated purchase request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser\n- You can't update another user's request"
+        "404":
+          description: Purchase Request not found
+    delete:
+      tags:
+      - PurchaseRequest
+      description: Delete a purchase request
+      operationId: deletePurchaseRequest
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: PurchaseRequest succesfully deleted
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser\n- You can't delete another user's request"
+        "404":
+          description: Purchase Request not found
+  /rest/requests/{id}/proposal:
+    put:
+      tags:
+      - PurchaseRequest properties
+      description: Set a purchase proposal for a request
+      operationId: setPurchaseProposal
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The purchase proposal for a request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseProposal"
+        required: true
+      responses:
+        "200":
+          description: The purchase request updated with the purchase proposal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ technician\n- You are not assigned to this request"
+        "404":
+          description: Purchase Request not found
+  /rest/requests/{id}/technician:
+    put:
+      tags:
+      - PurchaseRequest properties
+      description: Set technician by ID for a purchase request
+      operationId: setTechnician
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: ID of technician that needs to be assigned to the requesy
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+        required: true
+      responses:
+        "200":
+          description: The purchase request updated with the assigned technician
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "400":
+          description: Technician ID is not valid
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ technician"
+        "404":
+          description: Purchase Request not found
+  /rest/requests/{id}/proposal/modify:
+    put:
+      tags:
+      - PurchaseRequest properties
+      description: Update the purchase proposal for a request
+      operationId: updatePurchaseProposal
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The purchase proposal to update for a request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseProposal"
+        required: true
+      responses:
+        "200":
+          description: The purchase request with the updated purchase proposal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ technician\n- You are not assigned to this request"
+        "404":
+          description: Purchase Request not found
+  /rest/requests/byTechnician:
+    get:
+      tags:
+      - PurchaseRequest collection
+      description: Get the purchase requests collection assigned to a technician
+      operationId: getPurchaseRequestsByTechnician
+      responses:
+        "200":
+          description: The purchase requests collection assigned to a technician
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ technician"
+  /rest/requests/byUser:
+    get:
+      tags:
+      - PurchaseRequest collection
+      description: Get the purchase requests collection of a purchaser
+      operationId: getPurchaseRequestsByUser
+      responses:
+        "200":
+          description: The purchase requests collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ purchaser"
+  /rest/requests/unassigned:
+    get:
+      tags:
+      - PurchaseRequest collection
+      description: Get the unassigned purchase requests collection
+      operationId: getUnassignedPurchaseRequests
+      responses:
+        "200":
+          description: The unassigned purchase requests collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseRequest"
+        "401":
+          description: "Unauthorized: \n- User not authenticated\n- User is not a\
+            \ technician"
+  /rest/auth/login:
+    post:
+      tags:
+      - Authentication
+      description: Performs the login by sending the username/password pair
+      operationId: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: The authorization token
+          headers:
+            Authorization:
+              description: Bearer token for authentication
+              style: simple
+              schema:
+                pattern: "Bearer [a-z0-9A-Z-]+"
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: Username or password not setted
+        "401":
+          description: "Unauthorized, wrong username or password"
+  /rest/auth/logout:
+    delete:
+      tags:
+      - Authentication
+      description: Invalidates the current user session and removes the authentication
+        token.
+      operationId: logout
+      responses:
+        "204":
+          description: Successful logout
+        "401":
+          description: Unauthorized
+      security:
+      - bearerAuth: []
+  /rest/auth/refresh:
+    get:
+      tags:
+      - Authentication
+      description: Refreshes the current authorization token
+      operationId: refresh
+      responses:
+        "200":
+          description: The refreshed authorization token
+          headers:
+            Authorization:
+              description: Bearer token for authentication
+              style: simple
+              schema:
+                pattern: "Bearer [a-z0-9A-Z-]+"
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: text/plain
+        "401":
+          description: Unauthorized
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    PurchaseProposal:
+      type: object
+      properties:
+        manufacturerName:
+          type: string
+        productName:
+          type: string
+        productCode:
+          type: string
+        price:
+          type: number
+          format: float
+        url:
+          type: string
+        notes:
+          type: string
+        motivation:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PurchaseRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          type: string
+        requestedFeatures:
+          type: object
+          additionalProperties:
+            type: string
+        notes:
+          type: string
+        purchaser:
+          $ref: "#/components/schemas/User"
+        technician:
+          $ref: "#/components/schemas/User"
+        purchaseProposal:
+          $ref: "#/components/schemas/PurchaseProposal"
+        status:
+          type: string
+          enum:
+          - UNASSIGNED
+          - IN_PROGRESS
+          - APPROVED
+          - REJECTED
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+          writeOnly: true
+        userType:
+          type: string
+          enum:
+          - PURCHASER
+          - TECHNICIAN
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
