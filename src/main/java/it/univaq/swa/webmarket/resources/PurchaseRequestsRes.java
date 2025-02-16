@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
+import it.univaq.swa.webmarket.exceptions.RESTWebApplicationException;
 import it.univaq.swa.webmarket.exceptions.WebMarketException;
 import it.univaq.swa.webmarket.model.PurchaseRequest;
 import it.univaq.swa.webmarket.model.User;
@@ -37,6 +38,8 @@ import jakarta.ws.rs.core.UriInfo;
 public class PurchaseRequestsRes {
 
 	private static final String NOT_PURCHASER = "User is not a purchaser";
+	private static final String NOT_TECHNICIAN = "User is not a technician";
+	
 	private final PurchaseRequestsService business;
 
 	public PurchaseRequestsRes() {
@@ -54,8 +57,7 @@ public class PurchaseRequestsRes {
 			@ApiResponse(responseCode = "201", description = "Purchase request created", 
 					content = @Content(schema = @Schema(implementation = URI.class))),
 			@ApiResponse(responseCode = "400", description = "Can not add this purchase request"),
-			@ApiResponse(responseCode = "401", description = "User is not a purchaser"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized") })
+			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER) })
 	public Response addPurchaseRequest(
 			@Parameter(description = "The purchase request", schema = @Schema(implementation = PurchaseRequest.class), required = true) PurchaseRequest purchaseRequest,
 			@Context SecurityContext securityContext, @Context ContainerRequestContext requestcontext,
@@ -89,7 +91,7 @@ public class PurchaseRequestsRes {
 			PurchaseRequest request = business.getPurchaseRequest(requestId);
 			return new PurchaseRequestRes(request);
 		} catch (NotFoundException ex) {
-			return null;
+			throw new RESTWebApplicationException(404, ex.getMessage());
 		}
 	}
 
@@ -102,8 +104,7 @@ public class PurchaseRequestsRes {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The purchase requests collection", 
 					content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
-			@ApiResponse(responseCode = "401", description = "User is not a purchaser"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized") })
+			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER) })
 	public Response getPurchaseRequestsByUser(@Context SecurityContext securityContext,
 			@Context ContainerRequestContext requestcontext, @Context UriInfo uriinfo) {
 
@@ -125,8 +126,7 @@ public class PurchaseRequestsRes {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The in progress purchase requests collection", 
 					content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
-			@ApiResponse(responseCode = "401", description = "User is not a purchaser"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized") })
+			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER) })
 	public Response getInProgressPurchaseRequestsByUser(@Context SecurityContext securityContext,
 			@Context ContainerRequestContext requestcontext, @Context UriInfo uriinfo) {
 
@@ -142,24 +142,31 @@ public class PurchaseRequestsRes {
 	@GET
 	@Path("/unassigned")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Logged
 	@Operation(description = "Get the unassigned purchase requests collection", 
 		tags = {"PurchaseRequest collection" }, 
 		responses = {
-			@ApiResponse(responseCode = "200", description = "The unassigned purchase requests collection", content = @Content(schema = @Schema(implementation = PurchaseRequest.class))) })
-	public Response getUnassignedPurchaseRequests(@Context UriInfo uriinfo) {
-		return Response.ok(mapPurchaseRequests(business.getNotAssignedRequests(), uriinfo)).build();
+			@ApiResponse(responseCode = "200", description = "The unassigned purchase requests collection", content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN)})
+	public Response getUnassignedPurchaseRequests(@Context SecurityContext securityContext,
+			@Context ContainerRequestContext requestcontext, @Context UriInfo uriinfo) {
+
+		if (securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
+			return Response.ok(mapPurchaseRequests(business.getNotAssignedRequests(), uriinfo)).build();
+		} else {
+			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
+		}
 	}
 
 	@GET
-	@Path("/assigned")
+	@Path("/byTechnician")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Logged
 	@Operation(description = "Get the purchase requests collection assigned to a technician", 
 		tags = {"PurchaseRequest collection" }, 
 		responses = {
 			@ApiResponse(responseCode = "200", description = "The purchase requests collection assigned to a technician", content = @Content(schema = @Schema(implementation = PurchaseRequest.class))),
-			@ApiResponse(responseCode = "401", description = "User is not a technician"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized") })
+			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN) })
 	public Response getPurchaseRequestsByTechnician(@Context SecurityContext securityContext,
 			@Context ContainerRequestContext requestcontext, @Context UriInfo uriinfo) {
 		
@@ -168,7 +175,7 @@ public class PurchaseRequestsRes {
 		if (securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
 			return Response.ok(mapPurchaseRequests(business.getRequestsByTechnician(username), uriinfo)).build();
 		} else {
-			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity("User is not a technician").build();
+			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
 		}
 	}
 

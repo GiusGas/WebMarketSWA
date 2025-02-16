@@ -70,7 +70,7 @@ public class FakeDb {
 		PurchaseRequest request = requests.get(id);
 
 		if (Objects.isNull(request)) {
-			throw new NotFoundException("Purchase Requst not found");
+			throw new NotFoundException("Purchase Request not found");
 		}
 
 		return request;
@@ -78,7 +78,7 @@ public class FakeDb {
 
 	public static void deletePurchaseRequest(Long id) throws NotFoundException {
 		if (Objects.isNull(requests.remove(id)))
-			throw new NotFoundException("Purchase Requst not found");
+			throw new NotFoundException("Purchase Request not found");
 	}
 
 	public static PurchaseRequest updatePurchaseRequest(PurchaseRequest request) {

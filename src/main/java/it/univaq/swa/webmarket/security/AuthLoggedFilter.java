@@ -5,6 +5,7 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
@@ -19,6 +20,8 @@ import it.univaq.swa.webmarket.utility.FakeDb;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthLoggedFilter implements ContainerRequestFilter {
 
+	private static final String NOT_AUTHENTICATED = "User not authenticated";
+	
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String token = null;
@@ -64,13 +67,13 @@ public class AuthLoggedFilter implements ContainerRequestFilter {
                     });
 
                 } else {
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(NOT_AUTHENTICATED).type(MediaType.TEXT_PLAIN).build());
                 }
             } catch (Exception e) {
-                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(NOT_AUTHENTICATED).type(MediaType.TEXT_PLAIN).build());
             }
         } else {
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(NOT_AUTHENTICATED).type(MediaType.TEXT_PLAIN).build());
         }
     }
 }

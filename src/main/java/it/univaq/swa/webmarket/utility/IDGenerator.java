@@ -15,7 +15,7 @@ public class IDGenerator {
 		return generator;
 	}
 
-	public static Long generateID() {
+	public Long generateID() {
 		id++;
 		return id;
 	}
