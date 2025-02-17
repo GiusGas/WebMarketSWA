@@ -9,7 +9,6 @@ import jakarta.ws.rs.ext.Provider;
 public class AppExceptionMapper implements ExceptionMapper<WebMarketException> {
     @Override
     public Response toResponse(WebMarketException exception) {
-        //possiamo trasformare queste eccezioni in una risposta formattata, se non le catturiamo all'origine...
         return Response.serverError().entity(exception.getMessage()).type(MediaType.APPLICATION_JSON).build();
     }
 }

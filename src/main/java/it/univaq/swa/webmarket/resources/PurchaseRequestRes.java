@@ -14,6 +14,7 @@ import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
 import it.univaq.swa.webmarket.business.UserService;
 import it.univaq.swa.webmarket.business.UserServiceFactory;
+import it.univaq.swa.webmarket.exceptions.NotFoundError;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
 import it.univaq.swa.webmarket.exceptions.WebMarketException;
 import it.univaq.swa.webmarket.model.PurchaseProposal;
@@ -26,6 +27,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -56,7 +58,7 @@ public class PurchaseRequestRes {
 	          @ApiResponse(responseCode = "200", description = "The desired purchase request", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
 	          )),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class)))
 	  })
 	public Response getPurchaseRequest() {
 		return Response.ok(request).build();
@@ -74,7 +76,7 @@ public class PurchaseRequestRes {
 	                  schema = @Schema(implementation = PurchaseRequest.class)
 	          )),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER+"\n- You can't update another user's request"),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class)))
 	  })
 	public Response updatePurchaseRequest(@Parameter(
             description = "The updated purchase request",
@@ -96,7 +98,7 @@ public class PurchaseRequestRes {
 	}
 
 	@PUT
-	@Path("/technician")
+	@Path("/technician/{technId}")
 	@Logged
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -107,17 +109,18 @@ public class PurchaseRequestRes {
 	          @ApiResponse(responseCode = "200", description = "The purchase request updated with the assigned technician", content = @Content(
 	                  schema = @Schema(implementation = PurchaseRequest.class)
 	          )),
-	          @ApiResponse(responseCode = "400", description = "Technician ID is not valid"),
+	          @ApiResponse(responseCode = "400", description = "Technician ID is not valid" ,content = @Content(
+						schema = @Schema(type = "string", example = "Technician ID is not valid"), mediaType = MediaType.TEXT_PLAIN)),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class)))
 	  })
 	public Response setTechnician(@Parameter(
-            description = "ID of technician that needs to be assigned to the requesy",
+            description = "ID of technician that needs to be assigned to the request",
             schema = @Schema(
                     type = "integer",
                     format = "int64"
             ),
-            required = true)Long technicianId, @Context SecurityContext securityContext) {
+            required = true) @PathParam("technId") Long technicianId, @Context SecurityContext securityContext) {
 		
 		if (!securityContext.isUserInRole(UserType.TECHNICIAN.toString())) {
 			return Response.status(UNAUTHORIZED).type(MediaType.TEXT_PLAIN).entity(NOT_TECHNICIAN).build();
@@ -144,7 +147,7 @@ public class PurchaseRequestRes {
 	                  schema = @Schema(implementation = PurchaseRequest.class)
 	          )),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_TECHNICIAN+"\n- You are not assigned to this request"),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class)))
 	  })
 	public Response setPurchaseProposal(@Parameter(
             description = "The purchase proposal for a request",
@@ -181,8 +184,9 @@ public class PurchaseRequestRes {
 	                  schema = @Schema(implementation = PurchaseRequest.class)
 	          )),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER+"\n- You can't approve the proposal of another user's request"),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND),
-	          @ApiResponse(responseCode = "500", description = "Purchase proposal can not be approved")
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class))),
+	          @ApiResponse(responseCode = "500", description = "Purchase proposal can not be approved", content = @Content(
+						schema = @Schema(type = "string", example = "Purchase proposal can not be approved"), mediaType = MediaType.TEXT_PLAIN))
 	  })
 	public Response approvePurchaseProposal(@Context SecurityContext securityContext) {
 		
@@ -212,9 +216,10 @@ public class PurchaseRequestRes {
 	  tags = {"PurchaseRequest"},
 	  security = @SecurityRequirement(name = "bearerAuth"),
 	  responses = {
-	          @ApiResponse(responseCode = "204", description = "PurchaseRequest succesfully deleted"),
+	          @ApiResponse(responseCode = "204", description = "PurchaseRequest succesfully deleted", content = @Content(
+						schema = @Schema(type = "string", example = "PurchaseRequest succesfully deleted"), mediaType = MediaType.TEXT_PLAIN)),
 	          @ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER+"\n- You can't delete another user's request"),
-	          @ApiResponse(responseCode = "404", description = NOT_FOUND)
+	          @ApiResponse(responseCode = "404", description = NOT_FOUND, content = @Content(schema = @Schema(implementation = NotFoundError.class), mediaType = MediaType.APPLICATION_JSON))
 	  })
 	public Response deletePurchaseRequest(@Context SecurityContext securityContext) {
 		

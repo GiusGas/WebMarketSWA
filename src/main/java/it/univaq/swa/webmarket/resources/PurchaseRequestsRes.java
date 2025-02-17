@@ -16,6 +16,7 @@ import it.univaq.swa.webmarket.business.PurchaseRequestsService;
 import it.univaq.swa.webmarket.business.PurchaseRequestsServiceFactory;
 import it.univaq.swa.webmarket.business.UserService;
 import it.univaq.swa.webmarket.business.UserServiceFactory;
+import it.univaq.swa.webmarket.exceptions.NotFoundError;
 import it.univaq.swa.webmarket.exceptions.NotFoundException;
 import it.univaq.swa.webmarket.exceptions.RESTWebApplicationException;
 import it.univaq.swa.webmarket.exceptions.WebMarketException;
@@ -61,7 +62,8 @@ public class PurchaseRequestsRes {
 		responses = {
 			@ApiResponse(responseCode = "201", description = "Purchase request created", 
 					content = @Content(schema = @Schema(implementation = URI.class))),
-			@ApiResponse(responseCode = "400", description = "Can not add this purchase request"),
+			@ApiResponse(responseCode = "400", description = "Can not add this purchase request", content = @Content(
+					schema = @Schema(type = "string", example = "Can not add this purchase request"), mediaType = MediaType.TEXT_PLAIN)),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: \n- User not authenticated\n- "+NOT_PURCHASER) })
 	public Response addPurchaseRequest(
 			@Parameter(description = "The purchase request", schema = @Schema(implementation = PurchaseRequest.class), required = true) PurchaseRequest purchaseRequest,
@@ -96,7 +98,7 @@ public class PurchaseRequestsRes {
 			PurchaseRequest request = business.getPurchaseRequest(requestId);
 			return new PurchaseRequestRes(request);
 		} catch (NotFoundException ex) {
-			throw new RESTWebApplicationException(404, ex.getMessage());
+			throw new RESTWebApplicationException(new NotFoundError(404, ex.getMessage()));
 		}
 	}
 

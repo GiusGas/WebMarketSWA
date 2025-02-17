@@ -40,6 +40,11 @@ paths:
                 format: uri
         "400":
           description: Can not add this purchase request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Can not add this purchase request
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ purchaser"
@@ -88,8 +93,17 @@ paths:
             \ purchaser\n- You can't approve the proposal of another user's request"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
         "500":
           description: Purchase proposal can not be approved
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Purchase proposal can not be approved
       security:
       - bearerAuth: []
   /rest/requests/{id}:
@@ -114,6 +128,10 @@ paths:
                 $ref: "#/components/schemas/PurchaseRequest"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
     put:
       tags:
       - PurchaseRequest
@@ -145,6 +163,10 @@ paths:
             \ purchaser\n- You can't update another user's request"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
       security:
       - bearerAuth: []
     delete:
@@ -162,11 +184,20 @@ paths:
       responses:
         "204":
           description: PurchaseRequest succesfully deleted
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: PurchaseRequest succesfully deleted
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ purchaser\n- You can't delete another user's request"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
       security:
       - bearerAuth: []
   /rest/requests/{id}/proposal:
@@ -201,29 +232,32 @@ paths:
             \ technician\n- You are not assigned to this request"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
       security:
       - bearerAuth: []
-  /rest/requests/{id}/technician:
+  /rest/requests/{id}/technician/{technId}:
     put:
       tags:
       - PurchaseRequest properties
       description: Set technician by ID for a purchase request
       operationId: setTechnician
       parameters:
+      - name: technId
+        in: path
+        description: ID of technician that needs to be assigned to the request
+        required: true
+        schema:
+          type: integer
+          format: int64
       - name: id
         in: path
         required: true
         schema:
           type: integer
           format: int64
-      requestBody:
-        description: ID of technician that needs to be assigned to the requesy
-        content:
-          application/json:
-            schema:
-              type: integer
-              format: int64
-        required: true
       responses:
         "200":
           description: The purchase request updated with the assigned technician
@@ -233,11 +267,20 @@ paths:
                 $ref: "#/components/schemas/PurchaseRequest"
         "400":
           description: Technician ID is not valid
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Technician ID is not valid
         "401":
           description: "Unauthorized: \n- User not authenticated\n- User is not a\
             \ technician"
         "404":
           description: Purchase Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
       security:
       - bearerAuth: []
   /rest/requests/byTechnician:
@@ -442,6 +485,19 @@ components:
           enum:
           - PURCHASER
           - TECHNICIAN
+    NotFoundError:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: Error code
+          format: int32
+          example: 404
+        message:
+          type: string
+          description: Error message
+          example: Purchase Request not found
+      description: Purchase Request Not Found Error
   securitySchemes:
     bearerAuth:
       type: http
