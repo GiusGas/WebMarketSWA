@@ -24,7 +24,7 @@ La base URL alla quale fare riferimento per accedere ai servizi nel caso in cui 
 
 #### 1. Login/logout con username e password.
 
-API paths: 
+API URL: 
 - `POST /rest/auth/login`
 - `DELETE /rest/auth/logout`
 
@@ -33,14 +33,14 @@ Una volta effettuato il login verrà generato un token JWT che potrà essere suc
 
 #### 2. Inserimento di una *richiesta di acquisto* (comprensiva di categoria di prodotto, di tutte le caratteristiche richieste per quel tipo di prodotto e delle eventuali note)
 
-API path: `POST /rest/request/add`
+API URL: `POST /rest/request/add`
 
 Funzionalità accessibile tramite chiamata REST che richiede l'invio della richiesta in formato JSON.
 Inoltre, il servizio richiede che l'utente sia autenticato come "ordinante".
 
 #### 3. Associazione di una richiesta di acquisto a un tecnico incaricato  
 
-API path: `PUT /rest/requests/{id}/technician`
+API URL: `PUT /rest/requests/{id}/technician`
 
 Funzionalità accessibile tramite chiamata REST che richiede l'invio di due parametri nell'URL dell'API:
 - l'id della richiesta di acquisto
@@ -49,7 +49,7 @@ Tale servizio richiede che l'utente sia autenticato come "tecnico".
 
 #### 4. Inserimento e modifica (da parte del tecnico incaricato) di una *proposta di acquisto* associata a una richiesta 
 
-API path: 
+API URL: 
 - `PUT /rest/requests/{id}/proposal`
 
 Funzionalità accessibile tramite chiamata REST che richiede l'invio della proposta di acquisto in formato JSON e l'id della richiesta alla quale è associata come parametro nell'URL dell'API.
@@ -57,7 +57,7 @@ Il servizio richiede, quindi, che l'utente sia autenticato come "tecnico" e che 
 
 #### 5. Approvazione (da parte dell'ordinante) di una *proposta di acquisto*
 
-API path: `PUT /rest/requests/{id}/proposal/approve`
+API URL: `PUT /rest/requests/{id}/proposal/approve`
 
 Funzionalità accessibile tramite chiamata REST che richiede l'invio delll'id della richiesta di acquisto associata alla proposta nell'URL dell'API.
 Questa funzionalità è stata implementata anche lato client.
@@ -65,7 +65,7 @@ Il servizio richiede che l'utente sia autenticato come "ordinante" e che la prop
 
 #### 6. Eliminazione di una *richiesta di acquisto* dal sistema
 
-API path: `DELETE /rest/requests/{id}`
+API URL: `DELETE /rest/requests/{id}`
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
 Per eliminare con successo una richiesta tramite servizio REST basta inserire l'id della richiesta come parametro nell'URL dell'API.
@@ -73,28 +73,28 @@ Il servizio richiede che l'utente sia autenticato come "ordinante" e che la rich
 
 #### 7. Estrazione lista delle richieste di acquisto *in corso* (non chiuse) di un determinato ordinante
 
-API path: `GET /rest/requests/inProgress`
+API URL: `GET /rest/requests/inProgress`
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
 Tale servizio richiede che l'utente sia autenticato come "ordinante" e potrà vedere solo la lista delle proprie richieste *in corso*.
 
 #### 8. Estrazione lista delle richieste di acquisto non ancora assegnate ad alcun tecnico
 
-API path: `GET /rest/requests/unassigned`
+API URL: `GET /rest/requests/unassigned`
 
 Funzionalità accessibile tramite chiamata REST e che non richiede alcuna risorsa o parametro.
 Tale servizio richiede però che l'utente sia autenticato come "tecnico".
 
 #### 9. Estrazione di tutti i dettagli di una richiesta di acquisto (richiesta iniziale, eventuale prodotto candidato, approvazione/rifiuto dell'ordinante con relativa motivazione)
 
-API path: `GET /rest/requests/{id}`
+API URL: `GET /rest/requests/{id}`
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
 Per quanto riguarda il servizio REST, richiede solo l'id della richiesta di acquisto come parametro nell'URL dell'API.
 
 #### 10. Estrazione lista richieste di acquisto gestite da un determinato tecnico
 
-API path: `GET /rest/requests/byTechnician`
+API URL: `GET /rest/requests/byTechnician`
 
 Funzionalità accessibile tramite chiamata REST, non richiede alcuna risorsa o parametro in quanto è necessario che l'utente sia autenticato e che sia un tecnico.
 A quel punto il servizio restituirà la lista di richieste gestite dal tecnico autenticato.
@@ -103,14 +103,14 @@ A quel punto il servizio restituirà la lista di richieste gestite dal tecnico a
 
 #### 1. Estrazione lista richieste di acquisto di un determinato ordinante
 
-API path: `GET /rest/requests/byUser`
+API URL: `GET /rest/requests/byUser`
 
 Funzionalità realizzata sia lato server (tramite apposito servizio REST) che lato client.
 Tale servizio richiede che l'utente sia autenticato come "ordinante" e potrà vedere solo la lista delle proprie richieste, qualsiasi sia il loro stato.
 
 #### 2. Modifica di una *richiesta di acquisto*
 
-API path: `PUT /rest/requests/{id}`
+API URL: `PUT /rest/requests/{id}`
 
 Funzionalità accessibile tramite chiamata REST che richiede l'invio della richiesta in formato JSON e l'id della richiesta come parametro nell'URL dell'API.
 Il servizio richiede che l'utente sia autenticato come "ordinante" e che la richiesta di acquisto sia di proprietà del medesimo utente.
