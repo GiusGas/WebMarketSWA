@@ -109,7 +109,7 @@ $(document).ready(function() {
 				render: function(data, type, row) {
 					console.log(row);
 					//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
-					return `<button class="btn btn-primary btn-sm" onclick="showDetails('${row.category}', '${row.requestedFeatures}', '${row.notes}', '${row.createdAt}')">Dettagli</button>
+					return `<button class="btn btn-primary btn-sm" data-category="${row.category}" data-features="${row.requestedFeatures}" data-notes="${row.notes}" data-created="${row.createdAt}" data-proposal='${JSON.stringify(row.proposal || {})}' onclick="handleClick(this)">Dettagli</button>
 					<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
 				}
 			}
@@ -219,6 +219,9 @@ function deleteRequest(url) {
 		$.ajax({
 			url: url,
 			type: 'DELETE',
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader('Authorization', `Bearer ${bearerToken}`);
+			},
 			success: function() {
 				alert('Richiesta eliminata con successo.');
 				$('#richiesteTable').DataTable().ajax.reload();
@@ -235,6 +238,9 @@ function sendApproval(url, isApproved) {
 	$.ajax({
 		url: url + '/proposal/approve',
 		method: 'PUT',
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('Authorization', `Bearer ${bearerToken}`);
+		},
 		contentType: 'application/json',
 		data: JSON.stringify({ approved: isApproved }),
 		success: function(response) {
@@ -249,11 +255,36 @@ function sendApproval(url, isApproved) {
 	});
 }
 
-function showDetails(category, features, notes, createdAt) {
+function handleClick(button) {
+	const category = button.getAttribute("data-category");
+	const features = button.getAttribute("data-features");
+	const notes = button.getAttribute("data-notes");
+	const createdAt = button.getAttribute("data-created");
+	const proposal = JSON.parse(button.getAttribute("data-proposal"));
+
+	showDetails(category, features, notes, createdAt, proposal);
+}
+
+function showDetails(category, features, notes, createdAt, proposal) {
+	console.log(proposal);
+    
 	$('#modalCategory').text(category || 'N/A');
 	$('#modalFeatures').text(features || 'N/A');
 	$('#modalNotes').text(notes || 'N/A');
 	$('#modalCreatedAt').text(createdAt || 'N/A');
+
+	if (proposal && JSON.stringify(proposal) !== "{}") {
+		$('#modalProposal').text('');
+		$('#modalRequest').append(`<p><strong>- Nome Produttore:</strong> <span>'${proposal.manufacturerName || 'N/A'}'</span></p>`
+			+ `<p><strong>- Nome Prodotto:</strong> <span>'${proposal.productName || 'N/A'}'</span></p>`
+			+ `<p><strong>- Codice Prodotto:</strong> <span>'${proposal.productCode || 'N/A'}'</span></p>`
+			+ `<p><strong>- Prezzo:</strong> <span>€'${proposal.price || 'N/A'}'</span></p>`
+			+ `<p><strong>- URL:</strong> <a href=# target='_blank'>'${proposal.url || 'N/A'}'</a></p>`
+			+ `<p><strong>- Note:</strong> <span>'${proposal.notes || 'N/A'}'</span></p>`
+			+ `<p><strong>- Motivazione:</strong> <span>'${proposal.motivation || 'N/A'}'</span></p>`);
+	} else {
+		$('#modalProposal').text('Nessuna proposta');
+	}
 	$('#detailsModal').modal('show');
 }
 
