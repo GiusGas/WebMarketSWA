@@ -3,8 +3,6 @@ let bearerToken = null;
 
 $(document).ready(function() {
 
-	console.log(bearerToken);
-
 	$('#loginForm').on('submit', function(event) {
 		event.preventDefault();
 		const username = $('#username').val();
@@ -19,11 +17,9 @@ $(document).ready(function() {
 				bearerToken = response;
 				alert('Login effettuato con successo!');
 				$('#loginForm')[0].reset();
-				console.log(bearerToken);
 				// Reload DataTables after login
 				$('#richiesteTable').DataTable().ajax.reload();
 				$('#richiesteInCorsoTable').DataTable().ajax.reload();
-				//richiesteTable.ajax.reload();
 			},
 			error: function() {
 				alert('Errore durante il login. Verifica le credenziali.');
@@ -41,8 +37,7 @@ $(document).ready(function() {
 			dataSrc: function(json) {
 				return json.map(item => {
 					const request = item.request;
-					console.log(request);
-					console.log(item);
+					
 					const features = Object.entries(request.requestedFeatures)
 						.map(([key, value]) => `${key}: ${value}`)
 						.join(', ');
@@ -100,15 +95,12 @@ $(document).ready(function() {
 		},
 		columns: [
 			{ data: 'category' },
-			//{ data: 'requestedFeatures' },
 			{ data: 'status' },
 			{ data: 'createdAt' },
 			{ data: 'updatedAt' },
 			{
 				data: 'url',
 				render: function(data, type, row) {
-					console.log(row);
-					//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
 					return `<button class="btn btn-primary btn-sm" data-category="${row.category}" data-features="${row.requestedFeatures}" data-notes="${row.notes}" data-created="${row.createdAt}" data-proposal='${JSON.stringify(row.proposal || {})}' onclick="handleClick(this)">Dettagli</button>
 					<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
 				}
@@ -126,7 +118,7 @@ $(document).ready(function() {
 			dataSrc: function(json) {
 				return json.map(item => {
 					const request = item.request;
-					console.log(request);
+					
 					const features = Object.entries(request.requestedFeatures)
 						.map(([key, value]) => `${key}: ${value}`)
 						.join(', ');
@@ -183,25 +175,20 @@ $(document).ready(function() {
 		},
 		columns: [
 			{ data: 'category' },
-			//{ data: 'requestedFeatures' },
 			{ data: 'status' },
 			{ data: 'createdAt' },
 			{ data: 'updatedAt' },
 			{
 				data: 'url',
 				render: function(data, type, row) {
-					console.log(row);
-					//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
-					return `<button class="btn btn-primary btn-sm" onclick="showDetails('${row.category}', '${row.requestedFeatures}', '${row.notes}', '${row.createdAt}')">Dettagli</button>
+					return `<button class="btn btn-primary btn-sm" onclick="showRequestDetails('${row.category}', '${row.requestedFeatures}', '${row.notes}', '${row.createdAt}')">Dettagli</button>
 					<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
 				}
 			},
 			{
 				data: 'url',
 				render: function(data, type, row) {
-					console.log(row.proposal);
 					if (row.proposal != null) {
-						//return `<button class="btn btn-danger btn-sm" onclick="deleteRequest('${data}')">Elimina</button>`;
 						return `<button class="btn btn-primary btn-sm" onclick='showProductModal(${JSON.stringify(row.proposal || {})})'>Dettagli</button>
 							<button class="btn btn-success btn-sm" onclick="sendApproval('${data}', true)">Approva</button>`;
 					} else {
@@ -266,8 +253,9 @@ function handleClick(button) {
 }
 
 function showDetails(category, features, notes, createdAt, proposal) {
-	console.log(proposal);
-    
+	
+	$('#modalProposalDetail').html('');
+	
 	$('#modalCategory').text(category || 'N/A');
 	$('#modalFeatures').text(features || 'N/A');
 	$('#modalNotes').text(notes || 'N/A');
@@ -275,7 +263,7 @@ function showDetails(category, features, notes, createdAt, proposal) {
 
 	if (proposal && JSON.stringify(proposal) !== "{}") {
 		$('#modalProposal').text('');
-		$('#modalRequest').append(`<p><strong>- Nome Produttore:</strong> <span>'${proposal.manufacturerName || 'N/A'}'</span></p>`
+		$('#modalProposalDetail').append(`<p><strong>- Nome Produttore:</strong> <span>'${proposal.manufacturerName || 'N/A'}'</span></p>`
 			+ `<p><strong>- Nome Prodotto:</strong> <span>'${proposal.productName || 'N/A'}'</span></p>`
 			+ `<p><strong>- Codice Prodotto:</strong> <span>'${proposal.productCode || 'N/A'}'</span></p>`
 			+ `<p><strong>- Prezzo:</strong> <span>€'${proposal.price || 'N/A'}'</span></p>`
@@ -285,6 +273,19 @@ function showDetails(category, features, notes, createdAt, proposal) {
 	} else {
 		$('#modalProposal').text('Nessuna proposta');
 	}
+	$('#detailsModal').modal('show');
+}
+
+function showRequestDetails(category, features, notes, createdAt) {
+	
+	$('#modalProposalDetail').html('');
+    
+	$('#modalCategory').text(category || 'N/A');
+	$('#modalFeatures').text(features || 'N/A');
+	$('#modalNotes').text(notes || 'N/A');
+	$('#modalCreatedAt').text(createdAt || 'N/A');
+	$('#modalProposal').text('Inserita nella sezione Proposta d\'acquisto');
+	
 	$('#detailsModal').modal('show');
 }
 
